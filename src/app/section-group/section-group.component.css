@@ -1,0 +1,24 @@
+:host {
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+.card {
+  display: block;
+  padding: 10px;
+  border: 1px solid #aaa;
+  text-decoration: none;
+  color: #000;
+  margin: 10px;
+}
+
+.card span {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,42 @@
+<form [formGroup]="form" (submit)="onSubmit()">
+  <header>
+    <div class="title">
+      <ng-container *ngIf="!isEdit">Adding new card</ng-container>
+      <ng-container *ngIf="isEdit">Editing card</ng-container>
+    </div>
+  </header>
+  <section>
+    <div class="field">
+      <label for="field-group-id" class="field-label">Group *</label>
+      <div formGroupName="group">
+        <ng-container *ngIf="groups.length">
+          <select id="field-group-id" formControlName="id">
+            <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+            <option value="">[create new group]</option>
+          </select>
+        </ng-container>
+        <input id="field-group-name" formControlName="name" *ngIf="showGroupName">
+      </div>
+    </div>
+    <div class="field">
+      <label for="field-word" class="field-label">Word to learn *</label>
+      <input id="field-word" formControlName="word">
+    </div>
+    <div class="field">
+      <label for="field-translated" class="field-label">Translated *</label>
+      <input id="field-translated" formControlName="translated">
+    </div>
+    <div class="examples">
+      <label for="field-examples" class="field-label">Examples</label>
+      <textarea id="field-examples" formControlName="examples"></textarea>
+    </div>
+  </section>
+  <footer>
+    <button [disabled]="!form.valid">
+      <ng-container *ngIf="!isEdit">Make new card</ng-container>
+      <ng-container *ngIf="isEdit">Save card</ng-container>
+    </button>
+    <a href="javascript:;" (click)="close()">Cancel</a>
+    <a href="javascript:;" (click)="deleteCard()" *ngIf="isEdit">Delete</a>
+  </footer>
+</form>

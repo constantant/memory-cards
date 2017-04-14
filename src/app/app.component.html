@@ -1,0 +1,9 @@
+<header>
+  <a href="javascript:;" *ngFor="let group of groups" [routerLink]="[group.id]" [routerLinkActive]="'current'">
+    <span>{{ group.name }}</span>
+  </a>
+</header>
+<section>
+  <router-outlet></router-outlet>
+</section>
+<button (click)="addCard()" class="add" *ngIf="show">Add a card to group</button>
