@@ -24,6 +24,25 @@ footer {
   flex-shrink: 0;
 }
 
+footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.submit,
+.delete {
+  flex-shrink: 0;
+}
+
+.delete a {
+  color: #af0000;
+}
+
 .title {
   font-size: 20px;
   margin-bottom: 20px;

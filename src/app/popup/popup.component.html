@@ -32,11 +32,17 @@
     </div>
   </section>
   <footer>
-    <button [disabled]="!form.valid">
-      <ng-container *ngIf="!isEdit">Make new card</ng-container>
-      <ng-container *ngIf="isEdit">Save card</ng-container>
-    </button>
-    <a href="javascript:;" (click)="close()">Cancel</a>
-    <a href="javascript:;" (click)="deleteCard()" *ngIf="isEdit">Delete</a>
+    <div class="submit">
+      <button [disabled]="!form.valid">
+        <ng-container *ngIf="!isEdit">Make new card</ng-container>
+        <ng-container *ngIf="isEdit">Save card</ng-container>
+      </button>
+    </div>
+    <div class="cancel">
+      <a href="javascript:;" (click)="close()">Cancel</a>
+    </div>
+    <div class="delete">
+      <a href="javascript:;" (click)="deleteCard()" *ngIf="isEdit">Delete</a>
+    </div>
   </footer>
 </form>
