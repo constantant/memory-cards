@@ -123,6 +123,10 @@ export class PopupComponent implements OnInit {
   }
 
   deleteCard() {
+    if (!confirm(`Are you sure?\nYou are going to delete "${this.data.word}" word.`)) {
+      return;
+    }
+
     let groupId = this.data.group.id;
     this._storeService.removeCard(this.cardId)
       .then(() => this._route.navigate([ groupId ])

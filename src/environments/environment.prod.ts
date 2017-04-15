@@ -1,3 +1,7 @@
 export const environment = {
-  production: true
+  production: true,
+  db: {
+    name: 'memory-cards',
+    version: 1
+  }
 };

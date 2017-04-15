@@ -6,4 +6,6 @@
 <section>
   <router-outlet></router-outlet>
 </section>
-<button (click)="addCard()" class="add" *ngIf="show">Add a card to group</button>
+<footer *ngIf="show">
+  <button (click)="addCard()" class="add">Add a card to group</button>
+</footer>

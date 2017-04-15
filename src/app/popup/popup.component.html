@@ -15,16 +15,16 @@
             <option value="">[create new group]</option>
           </select>
         </ng-container>
-        <input id="field-group-name" formControlName="name" *ngIf="showGroupName">
+        <input id="field-group-name" formControlName="name" *ngIf="showGroupName" autocomplete="off">
       </div>
     </div>
     <div class="field">
       <label for="field-word" class="field-label">Word to learn *</label>
-      <input id="field-word" formControlName="word">
+      <input id="field-word" formControlName="word" autocomplete="off">
     </div>
     <div class="field">
       <label for="field-translated" class="field-label">Translated *</label>
-      <input id="field-translated" formControlName="translated">
+      <input id="field-translated" formControlName="translated" autocomplete="off">
     </div>
     <div class="examples">
       <label for="field-examples" class="field-label">Examples</label>

@@ -36,8 +36,8 @@ section {
   overflow-y: auto;
 }
 
-.add {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
+footer{
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
