@@ -13,6 +13,7 @@ import { SectionGroupComponent } from './section-group/section-group.component';
 import { SectionCardComponent } from './section-card/section-card.component';
 import { RouterModule } from "@angular/router";
 import { rootRoutes } from "./routers/root-routers";
+import { PopupGroupComponent } from './popup-group/popup-group.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { rootRoutes } from "./routers/root-routers";
     PopupComponent,
     SectionIndexComponent,
     SectionGroupComponent,
-    SectionCardComponent
+    SectionCardComponent,
+    PopupGroupComponent
   ],
   imports: [
     RouterModule.forRoot(rootRoutes, { useHash: true }),
@@ -30,7 +32,7 @@ import { rootRoutes } from "./routers/root-routers";
     HttpModule
   ],
   providers: [ DbService, DataService, StoreService ],
-  entryComponents: [ PopupComponent ],
+  entryComponents: [ PopupComponent, PopupGroupComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule {

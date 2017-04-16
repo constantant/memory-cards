@@ -46,16 +46,9 @@ export class SectionCardComponent implements OnInit, OnDestroy {
   }
 
   next() {
-    this._storeService.getCards(this.groupId)
-      .then((cards: ICardInfo[]) => {
-        let currentIndex = cards.findIndex(({ id }) => id === this.id);
-        if (cards.length - 1 === currentIndex) {
-          this._route.navigate([ this.groupId, cards[ 0 ].id ]);
-          return;
-        }
-
-        this._route.navigate([ this.groupId, cards[ currentIndex + 1 ].id ]);
-      });
+    this._storeService.getNextCard(this.groupId, this.id).then((card: ICardInfo) => {
+      this._route.navigate([ this.groupId, card.id ]);
+    });
   }
 
   close() {

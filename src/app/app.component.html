@@ -7,5 +7,6 @@
   <router-outlet></router-outlet>
 </section>
 <footer *ngIf="show">
+  <a (click)="editGroup()" href="javascript:;" *ngIf="showEditButton">Edit group</a>
   <button (click)="addCard()" class="add">Add a card to group</button>
 </footer>

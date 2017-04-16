@@ -18,11 +18,13 @@ interface ICardInfo {
 }
 
 interface IFormData {
-  group: {
-    id?: number,
-    name?: string
-  },
+  group: IFormGroupData,
   word: string
   translated: string
   examples?: string
+}
+
+interface IFormGroupData {
+  id?: number,
+  name?: string
 }

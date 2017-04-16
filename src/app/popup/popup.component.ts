@@ -44,7 +44,7 @@ export class PopupComponent implements OnInit {
   }
 
   get groupId() {
-    let first = this.groups[ 0 ];
+    let first =  this._storeService.currentGroupData || this.groups[ 0 ];
     return first && first.id || '';
   }
 
@@ -130,7 +130,7 @@ export class PopupComponent implements OnInit {
     let groupId = this.data.group.id;
     this._storeService.removeCard(this.cardId)
       .then(() => this._route.navigate([ groupId ])
-        .then(() => this.componentRef.destroy()));
+        .then(() => close()));
   }
 
   close() {

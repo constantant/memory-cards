@@ -35,8 +35,12 @@ section {
   overflow: hidden;
 }
 
-footer{
+footer {
   padding: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+footer a {
+  margin-right: 10px;
 }

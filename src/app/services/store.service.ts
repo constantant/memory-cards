@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { DbService } from "./db.service";
+import Dexie from 'dexie';
 
 @Injectable()
 export class StoreService {
@@ -7,6 +8,8 @@ export class StoreService {
   groups: IGroupItem[] = [];
 
   cardHasShown: boolean = false;
+
+  currentGroupData: IFormGroupData;
 
   onCardChange: EventEmitter<number> = new EventEmitter();
 
@@ -26,6 +29,10 @@ export class StoreService {
     return promise;
   }
 
+  getGroup(id: number) {
+    return this._dbService.group.where('id').equals(id).first();
+  }
+
   updateGroup(id: number, group: IGroupItem) {
     let promise = this._dbService.group.update(id, group);
     promise.then(() => this.loadGroups());
@@ -33,30 +40,33 @@ export class StoreService {
   }
 
   removeGroup(id: number) {
-    let promise = this._dbService.group.delete(id);
+    let promise = Dexie.Promise.all([
+      this._dbService.group.delete(id),
+      this._dbService.card.where('groupId').equals(id).delete()
+    ]);
     promise.then(() => this.loadGroups());
     return promise;
   }
 
   getCards(groupId?: number) {
-    return this._dbService.card
-      .where('groupId')
-      .equals(groupId)
-      .sortBy('wordToLearn');
+    return this._dbService.card.where('groupId').equals(groupId).sortBy('wordToLearn');
   }
 
   getCard(cardId?: number) {
-    return this._dbService.card
-      .where('id')
-      .equals(cardId)
-      .first();
+    return this._dbService.card.where('id').equals(cardId).first();
   }
 
-  getNextCard(cardId?: number) {
-    return this._dbService.card
-      .where('id')
-      .equals(cardId)
-      .first();
+  getNextCard(groupId: number, cardId: number): Dexie.Promise<ICardInfo> {
+    return new Dexie.Promise((resolve, reject) => {
+      this.getCards(groupId).then((cards: ICardInfo[]) => {
+        let currentIndex = cards.findIndex(({ id }) => id === cardId);
+        if (cards.length - 1 === currentIndex) {
+          resolve(cards[ 0 ]);
+          return;
+        }
+        resolve(cards[ currentIndex + 1 ]);
+      });
+    });
   }
 
   addCard(card: ICardInfo) {
