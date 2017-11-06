@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
-import { StoreService } from "./services/store.service";
-import { PopupComponent } from "./popup/popup.component";
-import { PopupGroupComponent } from "./popup-group/popup-group.component";
+import { StoreService } from './services/store.service';
+import { PopupComponent } from './popup/popup.component';
+import { PopupGroupComponent } from './popup-group/popup-group.component';
 
 @Component({
   selector: 'app-root',
@@ -37,15 +37,15 @@ export class AppComponent {
   }
 
   addCard() {
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupComponent);
-    let componentRef = this._viewContainerRef.createComponent(componentFactory);
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupComponent);
+    const componentRef = this._viewContainerRef.createComponent(componentFactory);
 
     (<PopupComponent>componentRef.instance).componentRef = componentRef;
   }
 
   editGroup() {
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupGroupComponent);
-    let componentRef = this._viewContainerRef.createComponent(componentFactory);
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupGroupComponent);
+    const componentRef = this._viewContainerRef.createComponent(componentFactory);
 
     (<PopupGroupComponent>componentRef.instance).data = this._storeService.currentGroupData;
     (<PopupGroupComponent>componentRef.instance).componentRef = componentRef;

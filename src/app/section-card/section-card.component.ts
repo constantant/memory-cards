@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
-import { ActivatedRoute, Router } from "@angular/router";
-import { StoreService } from "../services/store.service";
-import { PopupComponent } from "../popup/popup.component";
+import { ActivatedRoute, Router } from '@angular/router';
+import { StoreService } from '../services/store.service';
+import { PopupComponent } from '../popup/popup.component';
 
 @Component({
   selector: 'app-section-card',
@@ -21,28 +21,6 @@ export class SectionCardComponent implements OnInit, OnDestroy {
               private _storeService: StoreService,
               private _componentFactoryResolver: ComponentFactoryResolver,
               private _viewContainerRef: ViewContainerRef) {
-    let load = (cardId: number) => {
-      _storeService.getCard(+cardId)
-        .then((card: ICardInfo) => {
-          if (!card) {
-            return;
-          }
-
-          let { id, groupId, word, translated, examples } = card;
-
-          this.id = id;
-          this.groupId = groupId;
-          this.word = word;
-          this.translated = translated;
-          this.examples = examples;
-        });
-    };
-
-    _activatedRoute.params
-      .subscribe(({ cardId }) => {
-        _storeService.onCardChange.subscribe(() => load(cardId));
-        load(cardId)
-      });
   }
 
   next() {
@@ -56,8 +34,8 @@ export class SectionCardComponent implements OnInit, OnDestroy {
   }
 
   edit() {
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupComponent);
-    let componentRef = this._viewContainerRef.createComponent(componentFactory);
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupComponent);
+    const componentRef = this._viewContainerRef.createComponent(componentFactory);
 
     (<PopupComponent>componentRef.instance).data = {
       group: {
@@ -74,7 +52,30 @@ export class SectionCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._storeService.cardHasShown = true;
+    const load = (cardId: number) => {
+      this._storeService.getCard(+cardId)
+        .then((card: ICardInfo) => {
+          if (!card) {
+            return;
+          }
+
+          const { id, groupId, word, translated, examples } = card;
+
+          this.id = id;
+          this.groupId = groupId;
+          this.word = word;
+          this.translated = translated;
+          this.examples = examples;
+
+          this._storeService.cardHasShown = true;
+        });
+    };
+
+    this._activatedRoute.params
+      .subscribe(({ cardId }) => {
+        this._storeService.onCardChange.subscribe(() => load(cardId));
+        load(cardId)
+      });
   }
 
   ngOnDestroy() {

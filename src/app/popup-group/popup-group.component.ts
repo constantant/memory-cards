@@ -1,7 +1,7 @@
 import { Component, ComponentRef, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { StoreService } from "../services/store.service";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { StoreService } from '../services/store.service';
 
 @Component({
   selector: 'app-popup-group',
@@ -47,7 +47,7 @@ export class PopupGroupComponent implements OnInit {
 
   onSubmit() {
     if (this.form.valid) {
-      let { id, name } = this.form.value;
+      const { id, name } = this.form.value;
 
       this._storeService.updateGroup(id, { name: name }).then(() => {
         this._storeService.currentGroupData.name = name;
