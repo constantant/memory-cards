@@ -12,6 +12,8 @@ import { SectionCardComponent } from './section-card/section-card.component';
 import { RouterModule } from '@angular/router';
 import { rootRoutes } from './routers/root-routers';
 import { PopupGroupComponent } from './popup-group/popup-group.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { PopupGroupComponent } from './popup-group/popup-group.component';
     RouterModule.forRoot(rootRoutes, { useHash: true }),
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [ DbService, StoreService ],
   entryComponents: [ PopupComponent, PopupGroupComponent ],
