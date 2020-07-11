@@ -8,71 +8,67 @@ import { StoreService } from '../services/store.service';
   templateUrl: './popup-group.component.html',
   styleUrls: [ './popup-group.component.css' ]
 })
-export class PopupGroupComponent implements OnInit {
+export class PopupGroupComponent {
 
-  form: FormGroup;
+  readonly form: FormGroup = this.formBuilder.group({
+    id: '',
+    name: [ '', Validators.required ],
+  });
 
-  componentRef: ComponentRef<PopupGroupComponent>;
+  componentRef: ComponentRef<PopupGroupComponent> | null = null;
 
   set data(value: IFormGroupData) {
     this.form.setValue(value);
-    this._data = value;
-  };
+    this.formData = value;
+  }
 
   get data(): IFormGroupData {
-    return this._data;
-  };
+    return this.formData || { id: 0, name: '' };
+  }
 
-  private _data: IFormGroupData;
+  private formData: IFormGroupData | null = null;
 
   get groups(): IGroupItem[] {
-    if (!this._storeService) {
+    if (!this.storeService) {
       return [];
     }
-    return this._storeService.groups;
+    return this.storeService.groups;
   }
 
-  constructor(private _route: Router,
-              private _formBuilder: FormBuilder,
-              private _storeService: StoreService) {
-    this.createForm();
+  constructor(private readonly route: Router,
+              private readonly formBuilder: FormBuilder,
+              private readonly storeService: StoreService) {
   }
 
-  createForm() {
-    this.form = this._formBuilder.group({
-      id: '',
-      name: [ '', Validators.required ],
-    });
-  }
-
-  onSubmit() {
+  onSubmit(): void {
     if (this.form.valid) {
       const { id, name } = this.form.value;
 
-      this._storeService.updateGroup(id, { name: name }).then(() => {
-        this._storeService.currentGroupData.name = name;
+      this.storeService.updateGroup(id, { id, name }).then(() => {
+        if (this.storeService.currentGroupData) {
+          this.storeService.currentGroupData.name = name;
+        }
         this.close();
       });
     }
   }
 
-  deleteGroup() {
+  deleteGroup(): void {
     if (!confirm(`Are you sure?\nYou are going to delete "${this.data.name}" group and all included cards`)) {
       return;
     }
 
-    this._storeService.removeGroup(this.data.id).then(() => {
-      this._route.navigate(['']);
+    if (!this.data.id) {
+      return;
+    }
+
+    this.storeService.removeGroup(this.data.id).then(() => {
+      this.route.navigate([ '' ]);
       this.close();
     });
   }
 
-  close() {
-    this.componentRef.destroy();
+  close(): void {
+    this.componentRef?.destroy();
   }
-
-  ngOnInit() {
-
-  }
-
 }

@@ -1,82 +1,90 @@
-import { Component, ComponentRef, OnInit } from '@angular/core';
-import { StoreService } from '../services/store.service';
-import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Component, ComponentRef } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
+import { StoreService } from '../services/store.service';
+
+const checkGroup = (): ValidatorFn => {
+  return (control: AbstractControl) => {
+    const id = control.get('id');
+    const name = control.get('name');
+    if (!id?.value && !name?.value) {
+      return { group: true };
+    }
+    return null;
+  };
+};
 
 @Component({
   selector: 'app-popup',
   templateUrl: './popup.component.html',
   styleUrls: [ './popup.component.css' ]
 })
-export class PopupComponent implements OnInit {
+export class PopupComponent {
 
-  form: FormGroup;
+  readonly form: FormGroup = this.formBuilder.group({
+    group: this.formBuilder.group({
+      id: 0,
+      name: ''
+    }, {
+      validator: checkGroup()
+    }),
+    word: [ '', Validators.required ],
+    translated: [ '', Validators.required ],
+    examples: ''
+  });
 
-  componentRef: ComponentRef<PopupComponent>;
+  componentRef: ComponentRef<PopupComponent> | null = null;
 
   isEdit = false;
 
-  cardId: number;
+  cardId = 0;
 
   showGroupName = true;
 
   set data(value: IFormData) {
     value.group.name = this.groupName;
     this.form.setValue(value);
-    this._data = value;
-  };
-
-  get data(): IFormData {
-    return this._data;
-  };
-
-  private _data: IFormData;
-
-  get groups(): IGroupItem[] {
-    if (!this._storeService) {
-      return [];
-    }
-    return this._storeService.groups;
+    this.formData = value;
   }
 
-  get groupName() {
+  get data(): IFormData {
+    return this.formData || {
+      group: { id: 0, name: '' },
+      word: '',
+      translated: '',
+      examples: ''
+    };
+  }
+
+  private formData: IFormData | null = null;
+
+  get groups(): IGroupItem[] {
+    if (!this.storeService) {
+      return [];
+    }
+    return this.storeService.groups;
+  }
+
+  get groupName(): string {
     return `Group #${this.groups.length + 1}`;
   }
 
-  get groupId() {
-    const first = this._storeService.currentGroupData || this.groups[ 0 ];
-    return first && first.id || '';
+  get groupId(): string {
+    const first = this.storeService.currentGroupData || this.groups[ 0 ];
+    return first && `${first.id}` || '';
   }
 
-  static checkGroup(): ValidatorFn {
-    return (control: FormGroup) => {
-      const { id, name } = control.controls;
-      if (!id.value && !name.value) {
-        return { group: true }
-      }
-      return null;
-    }
-  }
-
-  constructor(private _route: Router,
-              private _formBuilder: FormBuilder,
-              private _storeService: StoreService) {
+  constructor(private readonly route: Router,
+              private readonly formBuilder: FormBuilder,
+              private readonly storeService: StoreService) {
     this.createForm();
   }
 
-  createForm() {
-    this.form = this._formBuilder.group({
-      group: this._formBuilder.group({
-        id: this.groupId,
-        name: this.groupName
-      }, {
-        validator: PopupComponent.checkGroup()
-      }),
-      word: [ '', Validators.required ],
-      translated: [ '', Validators.required ],
-      examples: ''
-    });
-
+  createForm(): void {
+    this.form.patchValue({
+      group: { id: this.groupId, name: this.groupName }
+    }, { emitEvent: false });
     this.form.valueChanges.subscribe((value) => {
       const groupId = value.group.id;
       this.showGroupName = !groupId;
@@ -85,13 +93,14 @@ export class PopupComponent implements OnInit {
     this.showGroupName = !this.groupId;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.form.valid) {
       const { group, word, translated, examples } = this.form.value;
 
       if (this.isEdit) {
         if (group.id) {
-          this._storeService.updateCard(this.cardId, {
+          this.storeService.updateCard(this.cardId, {
+            id: this.cardId,
             groupId: +group.id,
             word,
             translated,
@@ -100,8 +109,9 @@ export class PopupComponent implements OnInit {
           return;
         }
 
-        this._storeService.addGroup({ name: group.name }).then((groupId: number) => {
-          this._storeService.updateCard(this.cardId, {
+        this.storeService.addGroup({ name: group.name }).then((groupId: number) => {
+          this.storeService.updateCard(this.cardId, {
+            id: this.cardId,
             groupId,
             word,
             translated,
@@ -112,7 +122,7 @@ export class PopupComponent implements OnInit {
       }
 
       if (group.id) {
-        this._storeService.addCard({
+        this.storeService.addCard({
           groupId: +group.id,
           word,
           translated,
@@ -121,8 +131,8 @@ export class PopupComponent implements OnInit {
         return;
       }
 
-      this._storeService.addGroup({ name: group.name }).then((groupId: number) => {
-        this._storeService.addCard({
+      this.storeService.addGroup({ name: group.name }).then((groupId: number) => {
+        this.storeService.addCard({
           groupId,
           word,
           translated,
@@ -132,23 +142,19 @@ export class PopupComponent implements OnInit {
     }
   }
 
-  deleteCard() {
+  deleteCard(): void {
     if (!confirm(`Are you sure?\nYou are going to delete "${this.data.word}" word.`)) {
       return;
     }
 
     const groupId = this.data.group.id;
-    this._storeService.removeCard(this.cardId)
-      .then(() => this._route.navigate([ groupId ])
+    this.storeService.removeCard(this.cardId)
+      .then(() => this.route.navigate([ groupId ])
         .then(() => close()));
   }
 
-  close() {
-    this.componentRef.destroy();
-  }
-
-  ngOnInit() {
-
+  close(): void {
+    this.componentRef?.destroy();
   }
 
 }

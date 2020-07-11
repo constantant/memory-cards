@@ -10,50 +10,51 @@ import { PopupComponent } from '../popup/popup.component';
 })
 export class SectionCardComponent implements OnInit, OnDestroy {
 
-  id: number;
-  groupId: number;
-  word: string;
-  translated: string;
-  examples: string;
+  id = 0;
+  groupId = 0;
+  word = '';
+  translated = '';
+  examples = '';
 
-  constructor(private _route: Router,
-              private _activatedRoute: ActivatedRoute,
-              private _storeService: StoreService,
-              private _componentFactoryResolver: ComponentFactoryResolver,
-              private _viewContainerRef: ViewContainerRef) {
+  constructor(private readonly route: Router,
+              private readonly activatedRoute: ActivatedRoute,
+              private readonly storeService: StoreService,
+              private readonly componentFactoryResolver: ComponentFactoryResolver,
+              private readonly viewContainerRef: ViewContainerRef) {
   }
 
-  next() {
-    this._storeService.getNextCard(this.groupId, this.id).then((card: ICardInfo) => {
-      this._route.navigate([ this.groupId, card.id ]);
+  next(): void {
+    this.storeService.getNextCard(this.groupId, this.id).then((card: ICardInfo) => {
+      this.route.navigate([ this.groupId, card.id ]);
     });
   }
 
-  close() {
-    this._route.navigate([ this.groupId ]);
+  close(): void {
+    this.route.navigate([ this.groupId ]);
   }
 
-  edit() {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(PopupComponent);
-    const componentRef = this._viewContainerRef.createComponent(componentFactory);
+  edit(): void {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(PopupComponent);
+    const componentRef = this.viewContainerRef.createComponent(componentFactory);
 
-    (<PopupComponent>componentRef.instance).data = {
+    componentRef.instance.data = {
       group: {
-        id: +this.groupId
+        id: +this.groupId,
+        name: ''
       },
       word: this.word,
       translated: this.translated,
       examples: this.examples
     };
 
-    (<PopupComponent>componentRef.instance).isEdit = true;
-    (<PopupComponent>componentRef.instance).cardId = this.id;
-    (<PopupComponent>componentRef.instance).componentRef = componentRef;
+    componentRef.instance.isEdit = true;
+    componentRef.instance.cardId = this.id;
+    componentRef.instance.componentRef = componentRef;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const load = (cardId: number) => {
-      this._storeService.getCard(+cardId)
+      this.storeService.getCard(+cardId)
         .then((card: ICardInfo) => {
           if (!card) {
             return;
@@ -61,25 +62,27 @@ export class SectionCardComponent implements OnInit, OnDestroy {
 
           const { id, groupId, word, translated, examples } = card;
 
-          this.id = id;
-          this.groupId = groupId;
-          this.word = word;
-          this.translated = translated;
-          this.examples = examples;
+          if (id) {
+            this.id = id;
+            this.groupId = groupId;
+            this.word = word;
+            this.translated = translated;
+            this.examples = examples;
+          }
 
-          this._storeService.cardHasShown = true;
+          this.storeService.cardHasShown = true;
         });
     };
 
-    this._activatedRoute.params
+    this.activatedRoute.params
       .subscribe(({ cardId }) => {
-        this._storeService.onCardChange.subscribe(() => load(cardId));
-        load(cardId)
+        this.storeService.onCardChange.subscribe(() => load(cardId));
+        load(cardId);
       });
   }
 
-  ngOnDestroy() {
-    this._storeService.cardHasShown = false;
+  ngOnDestroy(): void {
+    this.storeService.cardHasShown = false;
   }
 
 }

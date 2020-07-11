@@ -1,6 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { DbService } from './db.service';
-import Dexie from 'dexie';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 @Injectable()
 export class StoreService {
@@ -9,80 +8,83 @@ export class StoreService {
 
   cardHasShown = false;
 
-  currentGroupData: IFormGroupData;
+  currentGroupData: IFormGroupData | null = null;
 
   onCardChange: EventEmitter<number> = new EventEmitter();
 
-  constructor(private _dbService: DbService) {
+  constructor(private readonly dbService: NgxIndexedDBService) {
     this.loadGroups();
   }
 
-  loadGroups() {
-    this._dbService.group.toArray().then((list: IGroupItem[]) => {
+  loadGroups(): void {
+    this.dbService.getAll<IGroupItem>('groups').then((list: IGroupItem[]) => {
       this.groups = list;
-    })
+    });
   }
 
-  addGroup(group: IGroupItem) {
-    const promise = this._dbService.group.add(group);
+  addGroup(group: IGroupItem): Promise<number> {
+    const promise = this.dbService.add('groups', group);
     promise.then(() => this.loadGroups());
     return promise;
   }
 
-  getGroup(id: number) {
-    return this._dbService.group.where('id').equals(id).first();
+  getGroup(id: number): Promise<IGroupItem> {
+    return this.dbService.getByID('groups', id);
   }
 
-  updateGroup(id: number, group: IGroupItem) {
-    const promise = this._dbService.group.update(id, group);
+  updateGroup(id: number, group: IGroupItem): Promise<IGroupItem> {
+    const promise = this.dbService.update('groups', group);
     promise.then(() => this.loadGroups());
     return promise;
   }
 
-  removeGroup(id: number) {
-    const promise = Dexie.Promise.all([
-      this._dbService.group.delete(id),
-      this._dbService.card.where('groupId').equals(id).delete()
+  removeGroup(id: number): Promise<void[]> {
+    const promise = Promise.all([
+      this.dbService.delete('groups', id),
+      this.dbService.getAllByIndex<ICardInfo>('cards', 'groupId', IDBKeyRange.only(id))
+        .then((cards: ICardInfo[]) => cards.forEach((card: ICardInfo) => this.dbService.delete('cards', id)))
     ]);
     promise.then(() => this.loadGroups());
     return promise;
   }
 
-  getCards(groupId?: number) {
-    return this._dbService.card.where('groupId').equals(groupId).sortBy('wordToLearn');
+  getCards(groupId: number): Promise<ICardInfo[]> {
+    return this.dbService.getAllByIndex<ICardInfo>('cards', 'groupId', IDBKeyRange.only(groupId));
   }
 
-  getCard(cardId?: number) {
-    return this._dbService.card.where('id').equals(cardId).first();
+  getCard(cardId: number): Promise<ICardInfo> {
+    return this.dbService.getByID('cards', cardId);
   }
 
-  getNextCard(groupId: number, cardId: number): Dexie.Promise<ICardInfo> {
-    return new Dexie.Promise((resolve, reject) => {
-      this.getCards(groupId).then((cards: ICardInfo[]) => {
-        const currentIndex = cards.findIndex(({ id }) => id === cardId);
-        if (cards.length - 1 === currentIndex) {
-          resolve(cards[ 0 ]);
-          return;
-        }
-        resolve(cards[ currentIndex + 1 ]);
-      });
+  getNextCard(groupId: number, cardId: number): Promise<ICardInfo> {
+    return new Promise((resolve, reject) => {
+      this.getCards(groupId)
+        .then((cards: ICardInfo[]) => {
+          const currentIndex = cards.findIndex(({ id }) => id === cardId);
+          if (cards.length - 1 === currentIndex) {
+            resolve(cards[ 0 ]);
+            return;
+          }
+          resolve(cards[ currentIndex + 1 ]);
+        })
+        .catch(() => reject());
     });
   }
 
-  addCard(card: ICardInfo) {
-    const promise = this._dbService.card.add(card);
+  addCard(card: ICardInfo): Promise<number> {
+    const promise = this.dbService.add('cards', card);
     promise.then(() => this.onCardChange.emit());
     return promise;
   }
 
-  updateCard(id: number, card: ICardInfo) {
-    const promise = this._dbService.card.update(id, card);
+  updateCard(id: number, card: ICardInfo): Promise<ICardInfo> {
+    const promise = this.dbService.update('cards', card);
     promise.then(() => this.onCardChange.emit());
     return promise;
   }
 
-  removeCard(id: number) {
-    const promise = this._dbService.card.delete(id);
+  removeCard(id: number): Promise<void> {
+    const promise = this.dbService.delete('cards', id);
     promise.then(() => this.onCardChange.emit());
     return promise;
   }

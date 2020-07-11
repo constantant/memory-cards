@@ -9,34 +9,34 @@ import { StoreService } from '../services/store.service';
 })
 export class SectionGroupComponent implements OnInit, OnDestroy {
 
-  id: number;
+  id = 0;
 
-  name: string;
+  name = '';
 
   cards: ICardInfo[] = [];
 
-  constructor(private _activatedRoute: ActivatedRoute,
-              private _storeService: StoreService) {
+  constructor(private readonly activatedRoute: ActivatedRoute,
+              private readonly storeService: StoreService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const load = () => {
-      this._storeService.getGroup(this.id).then((group: IFormGroupData)=>{
-        this._storeService.currentGroupData = group;
+      this.storeService.getGroup(this.id).then((group: IFormGroupData) => {
+        this.storeService.currentGroupData = group;
       });
-      this._storeService.getCards(this.id)
+      this.storeService.getCards(this.id)
         .then((cards: ICardInfo[]) => this.cards = cards);
     };
 
-    this._activatedRoute.params
+    this.activatedRoute.params
       .subscribe(({ groupId }) => {
         this.id = +groupId;
-        this._storeService.onCardChange.subscribe(load);
+        this.storeService.onCardChange.subscribe(load);
         load();
       });
   }
 
-  ngOnDestroy() {
-    this._storeService.currentGroupData = null;
+  ngOnDestroy(): void {
+    this.storeService.currentGroupData = null;
   }
 }
