@@ -39,6 +39,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/store-devtools/modules.ts",
+                  "with": "src/store-devtools/modules.prod.ts"
                 }
               ],
               "optimization": true,

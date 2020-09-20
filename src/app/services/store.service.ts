@@ -12,14 +12,12 @@ export class StoreService {
 
   onCardChange: EventEmitter<number> = new EventEmitter();
 
-  constructor(private readonly dbService: NgxIndexedDBService) {
-    this.loadGroups();
-  }
+  constructor(private readonly dbService: NgxIndexedDBService) {}
 
-  loadGroups(): void {
-    this.dbService.getAll<IGroupItem>('groups').then((list: IGroupItem[]) => {
-      this.groups = list;
-    });
+  loadGroups(): Promise<IGroupItem[]> {
+    const promise =  this.dbService.getAll<IGroupItem>('groups');
+    promise.then(list => this.groups = list);
+    return promise;
   }
 
   addGroup(group: IGroupItem): Promise<number> {

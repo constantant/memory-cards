@@ -4,7 +4,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { RouterModule } from '@angular/router';
 
+import { StoreModule } from '@ngrx/store';
+import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { EffectsModule } from '@ngrx/effects';
+
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
+
+import { environment } from '../environments/environment';
+import { devtoolsModules } from '../store-devtools/modules';
+import { rootRoutes } from './routers';
 
 import { AppComponent } from './app.component';
 import { PopupComponent } from './popup/popup.component';
@@ -13,8 +21,8 @@ import { SectionIndexComponent } from './section-index/section-index.component';
 import { SectionGroupComponent } from './section-group/section-group.component';
 import { SectionCardComponent } from './section-card/section-card.component';
 import { PopupGroupComponent } from './popup-group/popup-group.component';
-import { environment } from '../environments/environment';
-import { rootRoutes } from './routers';
+import { AppEffects } from './app.effects';
+import { appFeatureKey, appReducer } from './app.reducer';
 
 @NgModule({
   declarations: [
@@ -51,7 +59,14 @@ import { rootRoutes } from './routers';
           ]
         }
       ]
-    })
+    }),
+    StoreModule.forRoot({
+      router: routerReducer,
+    }),
+    StoreModule.forFeature(appFeatureKey, appReducer),
+    StoreRouterConnectingModule.forRoot(),
+    EffectsModule.forRoot([ AppEffects ]),
+    ...devtoolsModules,
   ],
   providers: [ StoreService ],
   entryComponents: [ PopupComponent, PopupGroupComponent ],

@@ -1,12 +1,12 @@
 <header>
-  <a href="javascript:;" *ngFor="let group of groups" [routerLink]="[group.id]" [routerLinkActive]="'current'">
+  <a href="javascript:" *ngFor="let group of groups$ | async" [routerLink]="[group.id]" [routerLinkActive]="'current'">
     <span>{{ group.name }}</span>
   </a>
 </header>
 <section>
   <router-outlet></router-outlet>
 </section>
-<footer *ngIf="show">
-  <a (click)="editGroup()" href="javascript:;" *ngIf="showEditButton">Edit group</a>
+<!--<footer *ngIf="show">
+  <a (click)="editGroup()" href="javascript:" *ngIf="showEditButton">Edit group</a>
   <button (click)="addCard()" class="add">Add a card to group</button>
-</footer>
+</footer>-->
