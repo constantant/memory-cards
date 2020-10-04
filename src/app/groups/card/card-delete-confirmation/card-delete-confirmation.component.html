@@ -1,0 +1,14 @@
+<p mat-dialog-content>
+  You are about to delete "{{card.word}}" card.
+</p>
+<div mat-dialog-actions>
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="confirm()"
+  >Delete</button>
+  <button
+    mat-button
+    (click)="close()"
+  >Cancel</button>
+</div>

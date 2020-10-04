@@ -1,0 +1,60 @@
+<form
+  *ngIf="form$ | async as form"
+  [formGroup]="form"
+  (ngSubmit)="submit(form)"
+>
+  <mat-form-field>
+    <mat-select
+      formControlName="groupId"
+      placeholder="Group"
+    >
+      <mat-option
+        *ngFor="let group of groups$ | async"
+        [value]="group.id"
+      >
+        {{group.name}}
+      </mat-option>
+      <mat-option [value]="0">Add new group</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="showGroupName$ | async">
+    <input
+      matInput
+      formControlName="groupName"
+      placeholder="Group name"
+    >
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      formControlName="word"
+      placeholder="Word"
+    >
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      formControlName="translated"
+      placeholder="Translation"
+    >
+  </mat-form-field>
+  <mat-form-field>
+    <textarea
+      matInput
+      formControlName="examples"
+      placeholder="Example"
+    ></textarea>
+  </mat-form-field>
+  <mat-toolbar>
+    <button
+      mat-raised-button
+      color="primary"
+    >Apply</button>
+
+    <button
+      mat-button
+      type="button"
+      [routerLink]="['/', form.value.groupId, form.value.id]"
+    >Back</button>
+  </mat-toolbar>
+</form>

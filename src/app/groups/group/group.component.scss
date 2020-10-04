@@ -1,0 +1,16 @@
+.app-card-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+
+.mat-card {
+  margin: 1rem;
+  cursor: pointer;
+  outline: none;
+
+  .mat-card-subtitle {
+    margin-bottom: 0;
+  }
+}

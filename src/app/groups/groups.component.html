@@ -1,0 +1,13 @@
+<nav mat-tab-nav-bar>
+  <a
+    mat-tab-link
+    routerLinkActive
+    #link="routerLinkActive"
+    *ngFor="let group of groups$ | async; trackBy: trackBy"
+    [routerLink]="[group.id]"
+    [active]="link.isActive"
+  >
+    {{group.name}}
+  </a>
+</nav>
+<router-outlet></router-outlet>

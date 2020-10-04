@@ -1,44 +1,33 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { StoreModule } from '@ngrx/store';
-import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
-import { EffectsModule } from '@ngrx/effects';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
 
-import { environment } from '../environments/environment';
-import { devtoolsModules } from '../store-devtools/modules';
-import { rootRoutes } from './routers';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { routerReducer, RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { EffectsModule } from '@ngrx/effects';
+import { EntityDataModule } from '@ngrx/data';
 
+import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PopupComponent } from './popup/popup.component';
-import { StoreService } from './services/store.service';
-import { SectionIndexComponent } from './section-index/section-index.component';
-import { SectionGroupComponent } from './section-group/section-group.component';
-import { SectionCardComponent } from './section-card/section-card.component';
-import { PopupGroupComponent } from './popup-group/popup-group.component';
-import { AppEffects } from './app.effects';
-import { appFeatureKey, appReducer } from './app.reducer';
+import { entityConfig } from './entity-metadata';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PopupComponent,
-    SectionIndexComponent,
-    SectionGroupComponent,
-    SectionCardComponent,
-    PopupGroupComponent
   ],
   imports: [
-    RouterModule.forRoot(rootRoutes, { useHash: true }),
     BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    BrowserAnimationsModule,
+    HttpClientModule,
+    AppRoutingModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     NgxIndexedDBModule.forRoot({
       ...environment.db,
       objectStoresMeta: [
@@ -60,16 +49,28 @@ import { appFeatureKey, appReducer } from './app.reducer';
         }
       ]
     }),
-    StoreModule.forRoot({
-      router: routerReducer,
+    StoreModule.forRoot(
+      {
+        router: routerReducer
+      },
+      {
+        runtimeChecks: {
+          strictStateImmutability: true,
+          strictActionImmutability: true,
+          strictActionSerializability: true,
+          strictStateSerializability: true
+        }
+      }
+    ),
+    StoreRouterConnectingModule.forRoot({
+      stateKey: 'router',
+      routerState: RouterState.Minimal
     }),
-    StoreModule.forFeature(appFeatureKey, appReducer),
-    StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([ AppEffects ]),
-    ...devtoolsModules,
+    EffectsModule.forRoot([]),
+    EntityDataModule.forRoot(entityConfig),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ],
-  providers: [ StoreService ],
-  entryComponents: [ PopupComponent, PopupGroupComponent ],
+  providers: [],
   bootstrap: [ AppComponent ]
 })
 export class AppModule {

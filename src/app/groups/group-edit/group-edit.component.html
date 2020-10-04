@@ -1,0 +1,25 @@
+<form
+  *ngIf="form$ | async as form"
+  [formGroup]="form"
+  (ngSubmit)="submit(form)"
+>
+  <mat-form-field>
+    <input
+      matInput
+      formControlName="name"
+      placeholder="Group name"
+    >
+  </mat-form-field>
+  <mat-toolbar>
+    <button
+      mat-raised-button
+      color="primary"
+    >Apply</button>
+
+    <button
+      mat-button
+      type="button"
+      [routerLink]="['/', form.value.id]"
+    >Back</button>
+  </mat-toolbar>
+</form>
