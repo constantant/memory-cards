@@ -1,6 +1,35 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "memory-cards": {
+      "root": "apps/memory-cards",
+      "projectType": "application",
+      "sourceRoot": "apps/memory-cards/src",
+      "targets": {
+        "build": {
+          "executor": "@nxext/sveltekit:sveltekit",
+          "options": {
+            "command": "build"
+          }
+        },
+        "serve": {
+          "executor": "@nxext/sveltekit:sveltekit",
+          "options": {
+            "command": "dev"
+          }
+        },
+        "add": {
+          "executor": "@nxext/sveltekit:add"
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/memory-cards/**/*.{ts,svelte,spec.ts}"]
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   }

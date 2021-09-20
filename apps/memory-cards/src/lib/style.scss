@@ -1,0 +1,30 @@
+@mixin theme($name, $colors: (color: white, contrast: black)) {
+  $bg: map-get($colors, color);
+  $text: map-get($colors, contrast);
+  $warn: red;
+
+  :global {
+    .mc-theme-#{$name} {
+      background: $bg;
+      color: $text;
+
+      .mc-nav {
+        a {
+          color: $text;
+        }
+      }
+
+      .mc-card-error {
+        color: $warn;
+      }
+
+      .mc-card-item {
+        color: $text;
+
+        a {
+          color: inherit;
+        }
+      }
+    }
+  }
+}
